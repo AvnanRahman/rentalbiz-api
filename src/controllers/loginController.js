@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
-async function login(req, res) {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -14,7 +14,7 @@ async function login(req, res) {
 
     // Check if the user exists
     if (!user) {
-      return res.status(401).json({ error: 'Email not found' });
+      return res.status(401).json({ error: 'User not found' });
     }
 
     // Compare the password
@@ -23,16 +23,14 @@ async function login(req, res) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+    // Generate a JWT token with user role and isAdmin flag
+    const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, process.env.JWT_SECRET);
 
     res.json({ token });
   } catch (error) {
     console.error('Failed to login', error);
     res.status(500).json({ error: 'Failed to login' });
   }
-}
-
-module.exports = {
-  login
 };
+
+module.exports = { login };

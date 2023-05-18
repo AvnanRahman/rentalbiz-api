@@ -20,7 +20,8 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
-  address VARCHAR(255) NOT NULL
+  address VARCHAR(255) NOT NULL,
+  isAdmin BOOLEAN DEFAULT false
 )`).catch(error => console.error('Failed to create users table', error));
 
 module.exports = pool;
