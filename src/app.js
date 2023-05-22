@@ -9,7 +9,7 @@ const itemRoutes = require('./routes/itemRoutes');
 require('dotenv').config();
 
 const app = express();
-const port = process.env._PORT || 3000;
+const port = process.env._PORT || 8080;
 
 app.use(express.json());
 
