@@ -30,6 +30,7 @@ pool.query(`CREATE TABLE IF NOT EXISTS items (
   nama VARCHAR(255) NOT NULL,
   deskripsi TEXT,
   harga INT NOT NULL,
+  kategori VARCHAR(255) NOT NULL,
   imageUrl VARCHAR(255) NOT NULL,
   persyaratan TEXT,
   tersedia BOOLEAN NOT NULL,
