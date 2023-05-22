@@ -24,4 +24,18 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
   isAdmin BOOLEAN DEFAULT false
 )`).catch(error => console.error('Failed to create users table', error));
 
+// Create a item table if it doesn't exist
+pool.query(`CREATE TABLE IF NOT EXISTS items (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nama VARCHAR(255) NOT NULL,
+  deskripsi TEXT,
+  harga INT NOT NULL,
+  kategori VARCHAR(255) NOT NULL,
+  imageUrl VARCHAR(255) NOT NULL,
+  persyaratan TEXT,
+  tersedia BOOLEAN NOT NULL,
+  stok INT NOT NULL,
+  totalSewa INT DEFAULT 0
+)`).catch(error => console.error('Failed to create items table', error));
+
 module.exports = pool;

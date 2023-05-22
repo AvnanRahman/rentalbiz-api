@@ -16,7 +16,7 @@ const addAdmin = async (req, res) => {
       res.status(201).json({ message: 'Admin user added successfully' });
     } catch (error) {
       console.error('Failed to add admin user', error);
-      res.status(500).json({ error: 'Failed to add admin user' });
+      res.status(500).json({ error: error.sqlMessage || 'Failed to add admin user' });
     }
   };
   
