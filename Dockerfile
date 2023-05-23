@@ -1,7 +1,7 @@
 FROM node:18.16.0
 WORKDIR /src
 COPY package*.json ./
-RUN NPM create-env
+RUN npm create-env
 RUN npm install
 COPY . .
 EXPOSE 8080
