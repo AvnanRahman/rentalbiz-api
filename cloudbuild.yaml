@@ -7,20 +7,14 @@ steps:
   args: ["run", "create-env"]
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  env-vars:
-   - DB_HOST: ${_DB_HOST}
-   - DB_NAME: ${_DB_NAME}
-   - DB_USER: ${_DB_USER}
-   - DB_PASS: ${_DB_PASS}
-   - JWT_SECRET: ${_JWT_SECRET}
   args: 
    - '-c'
    - |
-      sed -i "s/##_DB_HOST##/$${DB_HOST}/g" app.yaml
-      sed -i "s/##_DB_NAME##/$${DB_NAME}/g" app.yaml
-      sed -i "s/##_DB_USER##/$${DB_USER}/g" app.yaml
-      sed -i "s/##_DB_PASS##/$${DB_PASS}/g" app.yaml
-      sed -i "s/##_JWT_SECRET##/$${JWT_SECRET:}/g" app.yaml
+      sed -i "s/##_DB_HOST##/${_DB_HOST}/g" app.yaml
+      sed -i "s/##_DB_NAME##/${_DB_NAME}/g" app.yaml
+      sed -i "s/##_DB_USER##/${_DB_USER}/g" app.yaml
+      sed -i "s/##_DB_PASS##/${_DB_PASS}/g" app.yaml
+      sed -i "s/##_JWT_SECRET##/${_JWT_SECRET:}/g" app.yaml
       gcloud config set app/cloud_build_timeout 1600
       gcloud app deploy
 
