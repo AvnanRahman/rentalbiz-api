@@ -10,12 +10,25 @@ steps:
   args: 
    - '-c'
    - |
-      cat app.yaml | awk "{ if (NR == $(grep -n '%db_host%' app.yaml | cut -d : -f 1)) print \"    DB_HOST: ${_DB_HOST}\"; else print }" > app.yaml
-      cat app.yaml | awk "{ if (NR == $(grep -n '%db_name%' app.yaml | cut -d : -f 1)) print \"    DB_NAME: ${_DB_NAME}\"; else print }" > app.yaml
-      cat app.yaml | awk "{ if (NR == $(grep -n '%db_user%' app.yaml | cut -d : -f 1)) print \"    DB_USER: ${_DB_USER}\"; else print }" > app.yaml
-      cat app.yaml | awk "{ if (NR == $(grep -n '%db_pass%' app.yaml | cut -d : -f 1)) print \"    DB_PASS: ${_DB_PASS}\"; else print }" > app.yaml
-      cat app.yaml | awk "{ if (NR == $(grep -n '%jwt_secret%' app.yaml | cut -d : -f 1)) print \"    JWT_SECRET: ${_JWT_SECRET}\"; else print }" > app.yaml
+      cat app.yaml | awk "{ if (NR == $(grep -n '%db_host%' app.yaml | cut -d : -f 1)) print \"    DB_HOST: $$DB_HOST\"; else print }" > app.yaml
+      cat app.yaml | awk "{ if (NR == $(grep -n '%db_name%' app.yaml | cut -d : -f 1)) print \"    DB_NAME: $$DB_NAME\"; else print }" > app.yaml
+      cat app.yaml | awk "{ if (NR == $(grep -n '%db_user%' app.yaml | cut -d : -f 1)) print \"    DB_USER: $$DB_USER\"; else print }" > app.yaml
+      cat app.yaml | awk "{ if (NR == $(grep -n '%db_pass%' app.yaml | cut -d : -f 1)) print \"    DB_PASS: $$DB_PASS\"; else print }" > app.yaml
+      cat app.yaml | awk "{ if (NR == $(grep -n '%jwt_secret%' app.yaml | cut -d : -f 1)) print \"    JWT_SECRET: $$JWT_SECRET\"; else print }" > app.yaml
       gcloud app deploy
+  secretEnv: ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'JWT_SECRET']
+availableSecrets:
+  secretManager:
+  - versionName: projects/1045366563853/secrets/DB_HOST/versions/1
+    env: 'DB_HOST'
+  - versionName: projects/1045366563853/secrets/DB_NAME/versions/1
+    env: 'DB_NAME'
+  - versionName: projects/1045366563853/secrets/DB_USER/versions/1
+    env: 'DB_USER'
+  - versionName: projects/1045366563853/secrets/DB_PASS/versions/1
+    env: 'DB_PASS'
+  - versionName: projects/1045366563853/secrets/JWT_SECRET/versions/1
+    env: 'JWT_SECRET'
 
 # - name: "gcr.io/cloud-builders/gcloud"
 #   args: ["app", "deploy"]
