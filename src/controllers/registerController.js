@@ -18,7 +18,7 @@ const register = async (req, res) => {
       const userRole = isFirstUser ? true : isAdmin;
   
       // Insert the user into the database with the specified role
-      await pool.query('INSERT INTO users (name, email, password, address, phone, isAdmin) VALUES (?, ?, ?, ?, ?, ?)', [name, email, hashedPassword, ,address, phone, userRole]);
+      await pool.query('INSERT INTO users (name, email, password, address, phone, isAdmin) VALUES (?, ?, ?, ?, ?, ?)', [name, email, hashedPassword ,address, phone, userRole]);
   
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
