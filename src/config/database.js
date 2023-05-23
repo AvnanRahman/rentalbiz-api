@@ -22,7 +22,7 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  phone VARCHAR(20) NOT NULL
+  phone VARCHAR(20) NOT NULL,
   isAdmin BOOLEAN DEFAULT false
 )`).catch(error => console.error('Failed to create users table', error));
 
