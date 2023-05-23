@@ -24,7 +24,7 @@ const login = async (req, res) => {
     }
 
     // Generate a JWT token with user role and isAdmin flag
-    const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, process.env._JWT_SECRET);
+    const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, process.env.JWT_SECRET);
 
     res.json({ token });
   } catch (error) {
