@@ -1,10 +1,10 @@
 runtime: nodejs18
 env_variables:
-  _DB_HOST: "DB_HOST"
-  _DB_NAME: "DB_NAME"
-  _DB_USER: "DB_USER"
-  _DB_PASS: "DB_PASS"
-  _JWT_SECRET: "JWT_SECRET"
+  _DB_HOST: ##_DB_HOST##
+  _DB_NAME: ##_DB_NAME##
+  _DB_USER: ##_DB_USER##
+  _DB_PASS: ##_DB_PASS##
+  _JWT_SECRET: ##_JWT_SECRET##
 
 handlers:
 - url: /.*
