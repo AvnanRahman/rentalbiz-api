@@ -25,9 +25,3 @@ logsBucket: 'gs://artifacts.rentalbiz-387515.appspot.com'
 serviceAccount: 'projects/rentalbiz-387515/serviceAccounts/cloudrun@rentalbiz-387515.iam.gserviceaccount.com'
 options:
   logging: GCS_ONLY
-substitutions:
-  _DB_HOST: ${_DB_HOST}
-  _DB_NAME: ${_DB_NAME}
-  _DB_USER: ${_DB_USER}
-  _DB_PASS: ${_DB_PASS}
-  _JWT_SECRET: ${_JWT_SECRET}
