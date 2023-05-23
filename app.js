@@ -1,10 +1,10 @@
 // src/app.js
 
 const express = require('express');
-const loginRoutes = require('./routes/loginRoutes');
-const registerRoutes = require('./routes/registerRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const itemRoutes = require('./routes/itemRoutes');
+const loginRoutes = require('./src/routes/loginRoutes');
+const registerRoutes = require('./src/routes/registerRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const itemRoutes = require('./src/routes/itemRoutes');
 
 require('dotenv').config();
 
