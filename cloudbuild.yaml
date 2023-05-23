@@ -15,12 +15,11 @@ steps:
       cat app.yaml | awk "{ if (NR == $(grep -n '%db_user%' app.yaml | cut -d : -f 1)) print \"    SEC: ${_DB_USER}\"; else print }" > app.yaml
       cat app.yaml | awk "{ if (NR == $(grep -n '%db_pass%' app.yaml | cut -d : -f 1)) print \"    SEC: ${_DB_PASS}\"; else print }" > app.yaml
       cat app.yaml | awk "{ if (NR == $(grep -n '%jwt_secret%' app.yaml | cut -d : -f 1)) print \"    SEC: ${_JWT_SECRET}\"; else print }" > app.yaml
-      gcloud config set app/cloud_build_timeout 1600
       gcloud app deploy
 
 # - name: "gcr.io/cloud-builders/gcloud"
 #   args: ["app", "deploy"]
-timeout: "1600s"
+timeout: "3600s"
 logsBucket: 'gs://artifacts.rentalbiz-387515.appspot.com'
 serviceAccount: 'projects/rentalbiz-387515/serviceAccounts/cloudrun@rentalbiz-387515.iam.gserviceaccount.com'
 options:
