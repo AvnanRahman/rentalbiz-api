@@ -15,3 +15,7 @@ steps:
 - name: "gcr.io/cloud-builders/gcloud"
   args: ["app", "deploy"]
 timeout: "1600s"
+logsBucket: 'gs://artifacts.rentalbiz-387515.appspot.com'
+serviceAccount: 'projects/rentalbiz-387515/serviceAccounts/cloudrun@rentalbiz-387515.iam.gserviceaccount.com'
+options:
+  logging: GCS_ONLY
