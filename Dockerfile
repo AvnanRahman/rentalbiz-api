@@ -1,6 +1,6 @@
 FROM node:18.16.0
-WORKDIR /
+WORKDIR /src
 COPY package*.json ./
 RUN npm install
-copy . .
+COPY . .
 CMD [ "node", "app.js"]
