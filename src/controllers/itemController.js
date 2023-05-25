@@ -3,7 +3,7 @@ const pool = require('../config/database');
 
 const getItems = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, city } = req.query;
+    const { category, minPrice, maxPrice, city, tersedia } = req.query;
 
     let query = `
     SELECT i.*, u.city
@@ -31,11 +31,17 @@ const getItems = async (req, res) => {
       params.push(maxPrice);
     }
 
-      // Add city filter
-      if (city) {
-        query += ' AND u.city = ?';
-        params.push(city);
-      }
+    // Add city filter
+    if (city) {
+      query += ' AND u.city = ?';
+      params.push(city);
+    }
+
+    // Add tersedia filter
+    if (tersedia !== undefined) {
+      query += ' AND i.tersedia = ?';
+      params.push(tersedia === 'true' || tersedia === '1' || tersedia === 'true');
+    }
 
     // Execute the query
     const [rows] = await pool.query(query, params);
