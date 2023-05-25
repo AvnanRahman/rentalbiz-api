@@ -42,10 +42,13 @@ const addItem = async (req, res) => {
   try {
     const { nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
 
+    // Check time
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
     // Insert the item into the database
     const connection = await pool.getConnection();
-    const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    await connection.query(query, [nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok]);
+    const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    await connection.query(query, [nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok, now, now]);
     connection.release();
 
     res.status(201).json({ message: 'Item added successfully' });

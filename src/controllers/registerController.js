@@ -9,6 +9,9 @@ const register = async (req, res) => {
   
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Check time
+      const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
   
       // Check if the registering user is the first user (admin)
       const [existingUsers] = await pool.query('SELECT * FROM users');
@@ -18,7 +21,7 @@ const register = async (req, res) => {
       const userRole = isFirstUser ? true : isAdmin;
   
       // Insert the user into the database with the specified role
-      await pool.query('INSERT INTO users (name, email, password, address, city, phone, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, hashedPassword ,address, city, phone, userRole]);
+      await pool.query('INSERT INTO users (name, email, password, address, city, phone, isAdmin, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [name, email, hashedPassword ,address, city, phone, userRole, now]);
   
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {

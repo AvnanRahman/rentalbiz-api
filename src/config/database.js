@@ -24,7 +24,8 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
   address VARCHAR(255) NOT NULL,
   city VARCHAR(20) NOT NULL,
   phone VARCHAR(20) NOT NULL,
-  isAdmin BOOLEAN DEFAULT false
+  isAdmin BOOLEAN DEFAULT false,
+  created_at TIMESTAMP NULL
 )`).catch(error => console.error('Failed to create users table', error));
 
 // Create a item table if it doesn't exist
@@ -40,6 +41,8 @@ pool.query(`CREATE TABLE IF NOT EXISTS items (
   tersedia BOOLEAN NOT NULL,
   stok INT NOT NULL,
   totalSewa INT DEFAULT 0,
+  created_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL,
   CONSTRAINT FK_Penyedia FOREIGN KEY (id_penyedia) REFERENCES users(id)
 )`).catch(error => console.error('Failed to create items table', error));
 
