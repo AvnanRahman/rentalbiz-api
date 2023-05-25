@@ -55,53 +55,6 @@ const addItem = async (req, res) => {
   }
 };
 
-// const getItemsByCategory = async (req, res) => {
-//   try {
-//     const { category } = req.params;
-
-//     // Retrieve items from the database by category
-//     const [rows] = await pool.query('SELECT * FROM items WHERE kategori = ?', [category]);
-//     const items = rows;
-
-//     res.json(items);
-//   } catch (error) {
-//     console.error('Failed to retrieve items', error);
-//     res.status(500).json({ error: 'Failed to retrieve items' });
-//   }
-// };
-
-// const getItemsByPriceRange = async (req, res) => {
-//   try {
-//     const { minPrice, maxPrice } = req.query;
-
-//     const [rows] = await pool.query('SELECT * FROM items WHERE harga >= ? AND harga <= ?', [minPrice, maxPrice]);
-//     const items = rows;
-
-//     res.json(items);
-//   } catch (error) {
-//     console.error('Failed to retrieve items', error);
-//     res.status(500).json({ error: 'Failed to retrieve items' });
-//   }
-// };
-
-// const getItemsByCategoryAndPriceRange = async (req, res) => {
-//   try {
-//     const { category, minPrice, maxPrice } = req.query;
-
-//     const [rows] = await pool.query(
-//       'SELECT * FROM items WHERE kategori = ? AND harga >= ? AND harga <= ?',
-//       [category, minPrice, maxPrice]
-//     );
-//     const items = rows;
-
-//     res.json(items);
-//   } catch (error) {
-//     console.error('Failed to retrieve items', error);
-//     res.status(500).json({ error: 'Failed to retrieve items' });
-//   }
-// };
   
-  module.exports = { getItems, addItem, 
-    //getItemsByCategory, getItemsByPriceRange, getItemsByCategoryAndPriceRange 
-  };
+  module.exports = { getItems, addItem, };
   
