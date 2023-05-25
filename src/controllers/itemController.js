@@ -40,12 +40,12 @@ const getItems = async (req, res) => {
 // Add an item
 const addItem = async (req, res) => {
   try {
-    const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
+    const { nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
 
     // Insert the item into the database
     const connection = await pool.getConnection();
-    const query = 'INSERT INTO items (nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    await connection.query(query, [nama, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok]);
+    const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    await connection.query(query, [nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok]);
     connection.release();
 
     res.status(201).json({ message: 'Item added successfully' });
