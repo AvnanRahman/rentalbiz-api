@@ -10,19 +10,6 @@ steps:
 # Deploy container image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', 'gcr.io/${_PROJECT_ID}/${_SERVICE_NAME}:${SHORT_SHA}', '--region', 'asia-east1', '--platform', 'managed', "--allow-unauthenticated", '--set-env-vars', 'DB_HOST=$_DB_HOST', '--set-env-vars', 'DB_NAME=$_DB_NAME', '--set-env-vars', 'DB_USER=$_DB_USER', '--set-env-vars', 'DB_PASS=$_DB_PASS', '--set-env-vars', 'JWT_SECRET=$_JWT_SECRET' ]
-  secretEnv: ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'JWT_SECRET']
-availableSecrets:
-  secretManager:
-  - versionName: projects/1045366563853/secrets/DB_HOST/versions/1
-    env: 'DB_HOST'
-  - versionName: projects/1045366563853/secrets/DB_NAME/versions/1
-    env: 'DB_NAME'
-  - versionName: projects/1045366563853/secrets/DB_USER/versions/1
-    env: 'DB_USER'
-  - versionName: projects/1045366563853/secrets/DB_PASS/versions/1
-    env: 'DB_PASS'
-  - versionName: projects/1045366563853/secrets/JWT_SECRET/versions/1
-    env: 'JWT_SECRET'
 logsBucket: 'gs://artifacts.rentalbiz-387515.appspot.com'
 serviceAccount: 'projects/rentalbiz-387515/serviceAccounts/cloudrun@rentalbiz-387515.iam.gserviceaccount.com'
 options:

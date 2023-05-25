@@ -5,13 +5,13 @@ const pool = require('../config/database');
 const addAdmin = async (req, res) => {
     try {
       // Get the user data from the request body
-      const { name, email, password, address, phone } = req.body;
+      const { name, email, password, address, city, phone } = req.body;
   
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
   
       // Add the user as admin
-      await pool.query('INSERT INTO users (name, email, password, address, phone, isAdmin) VALUES (?, ?, ?, ?, ?, ?)', [name, email, hashedPassword, address, phone, true]);
+      await pool.query('INSERT INTO users (name, email, password, address, city, phone, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, email, hashedPassword, address, city, phone, true]);
   
       res.status(201).json({ message: 'Admin user added successfully' });
     } catch (error) {
@@ -26,7 +26,7 @@ const addAdmin = async (req, res) => {
       const [rows] = await pool.query('SELECT * FROM users');
   
       // Exclude password field from the response
-      const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin }));
+      const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, address: user.address, city: user.city, phone: user.phone, isAdmin: user.isAdmin, created_at: user.created_at }));
   
       res.json(users);
     } catch (error) {
