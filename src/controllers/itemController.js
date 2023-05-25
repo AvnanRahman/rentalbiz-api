@@ -3,28 +3,39 @@ const pool = require('../config/database');
 
 const getItems = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice } = req.query;
+    const { category, minPrice, maxPrice, city } = req.query;
 
-    let query = 'SELECT * FROM items WHERE 1=1';
+    let query = `
+    SELECT i.*, u.city
+    FROM items AS i
+    INNER JOIN users AS u ON i.id_penyedia = u.id
+    WHERE 1=1
+    `;
     const params = [];
 
     // Add category filter
     if (category) {
-      query += ' AND kategori = ?';
+      query += ' AND i.kategori = ?';
       params.push(category);
     }
 
     // Add price range filter
     if (minPrice && maxPrice) {
-      query += ' AND harga >= ? AND harga <= ?';
+      query += ' AND i.harga >= ? AND i.harga <= ?';
       params.push(minPrice, maxPrice);
     } else if (minPrice) {
-      query += ' AND harga >= ?';
+      query += ' AND i.harga >= ?';
       params.push(minPrice);
     } else if (maxPrice) {
-      query += ' AND harga <= ?';
+      query += ' AND i.harga <= ?';
       params.push(maxPrice);
     }
+
+      // Add city filter
+      if (city) {
+        query += ' AND u.city = ?';
+        params.push(city);
+      }
 
     // Execute the query
     const [rows] = await pool.query(query, params);

@@ -26,7 +26,7 @@ const addAdmin = async (req, res) => {
       const [rows] = await pool.query('SELECT * FROM users');
   
       // Exclude password field from the response
-      const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, address: user.address, city: user.city, phone: user.phone, isAdmin: user.isAdmin }));
+      const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, address: user.address, city: user.city, phone: user.phone, isAdmin: user.isAdmin, created_at: user.created_at }));
   
       res.json(users);
     } catch (error) {
