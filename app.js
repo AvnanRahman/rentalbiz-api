@@ -1,6 +1,7 @@
 // src/app.js
 
 const express = require('express');
+const isAuthenticated = require('./src/controllers/authMiddleware');
 const loginRoutes = require('./src/routes/loginRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
@@ -20,6 +21,6 @@ app.get('/', (req, res) => {
 app.use('/login', loginRoutes);
 app.use('/register', registerRoutes);
 app.use('/admin', adminRoutes);
-app.use('/items', itemRoutes);
+app.use('/items', isAuthenticated, itemRoutes);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
