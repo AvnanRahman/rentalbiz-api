@@ -41,10 +41,18 @@ const addAdmin = async (req, res) => {
       // Exclude password field from the response
       const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, address: user.address, city: user.city, phone: user.phone, isAdmin: user.isAdmin, created_at: user.created_at }));
   
-      res.json(users);
+      res.json({
+        success : true,
+        message : 'Data item didapatkan',
+        users
+      });
     } catch (error) {
       console.error('Failed to retrieve users', error);
-      res.status(500).json({ error: 'Failed to retrieve users' });
+      // res.status(500).json({ error: 'Failed to retrieve users' });
+      res.status(500).json({
+        success : false,
+        message : error.message
+      })
     }
   };
   
