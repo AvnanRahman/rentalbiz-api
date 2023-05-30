@@ -94,6 +94,8 @@ const addItem = async (req, res) => {
 const updateItem = async (req, res) => {
   try {
     const { id } = req.params;
+    const { id: id_penyedia } = req.user;
+   
     const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
 
     // Check time
@@ -106,23 +108,37 @@ const updateItem = async (req, res) => {
       return res.status(404).json({ error: 'Item not found' });
     }
 
+    // Check if the id_penyedia of the item matches the logged-in user's id_penyedia
+    if (item.id_penyedia !== id_penyedia) {
+      return res.status(403).json({ error: 'Access denied, you do not have access to edit this item' });
+    }
+
     // Update the item
     await pool.query('UPDATE items SET nama = ?, deskripsi = ?, harga = ?, kategori = ?, imageUrl = ?, persyaratan = ?, tersedia = ?, stok = ?, updated_at = ? WHERE id = ?', [nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, now, id]);
 
-    res.json({ message: 'Item updated successfully' });
+    res.json({ 
+      success : true,
+      message: 'Item updated successfully' 
+    });
   } catch (error) {
     console.error('Failed to update item', error);
-    res.status(500).json({ error: 'Failed to update item' });
+    res.status(500).json({
+      success : false,
+      message : error.message
+    });
+    // res.status(500).json({ error: 'Failed to update item' });
   }
 };
 
 const deleteItem = async (req, res) => {
   try {
     const { id } = req.params;
+    const { id: id_penyedia } = req.user;
 
     // Check if the item exists
-    const [rows] = await pool.query('SELECT * FROM items WHERE id = ?', [id]);
+    const [rows] = await pool.query('SELECT * FROM items WHERE id = ? AND id_penyedia = ?', [id, id_penyedia]);
     const item = rows[0];
+    
     if (!item) {
       return res.status(404).json({ error: 'Item not found' });
     }
