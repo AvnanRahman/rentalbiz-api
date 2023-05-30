@@ -3,7 +3,7 @@ const pool = require('../config/database');
 
 const getItems = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, city, tersedia } = req.query;
+    const { name, category, minPrice, maxPrice, city, tersedia } = req.query;
 
     let query = `
     SELECT i.*, u.city
@@ -12,6 +12,13 @@ const getItems = async (req, res) => {
     WHERE 1=1
     `;
     const params = [];
+
+
+    // Add name filter
+    if (name) {
+      query += ' AND i.nama LIKE ?';
+      params.push(`%${name}%`);
+    }
 
     // Add category filter
     if (category) {
@@ -47,10 +54,18 @@ const getItems = async (req, res) => {
     const [rows] = await pool.query(query, params);
     const items = rows;
 
-    res.json({ items });
+    res.json({ 
+      success : true,
+      message : 'Data item didapatkan',
+      items 
+    });
   } catch (error) {
     console.error('Failed to retrieve items', error);
-    res.status(500).json({ error: 'Failed to retrieve items' });
+    // res.status(500).json({ error: 'Failed to retrieve items' });
+    res.status(500).json({
+      success : false,
+      message : error.message
+    })
   }
 };
 
