@@ -47,10 +47,18 @@ const getItems = async (req, res) => {
     const [rows] = await pool.query(query, params);
     const items = rows;
 
-    res.json({ items });
+    res.json({ 
+      success : true,
+      message : 'Data item didapatkan',
+      items 
+    });
   } catch (error) {
     console.error('Failed to retrieve items', error);
-    res.status(500).json({ error: 'Failed to retrieve items' });
+    // res.status(500).json({ error: 'Failed to retrieve items' });
+    res.status(500).json({
+      success : false,
+      message : error.message
+    })
   }
 };
 

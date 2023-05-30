@@ -4,6 +4,12 @@ const pool = require('../config/database');
 
 const addAdmin = async (req, res) => {
     try {
+      // Check if the authenticated user is an admin
+      const { isAdmin } = req.user;
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
       // Get the user data from the request body
       const { name, email, password, address, city, phone } = req.body;
   
@@ -22,6 +28,13 @@ const addAdmin = async (req, res) => {
   
   const listUsers = async (req, res) => {
     try {
+
+      // Check if the authenticated user is an admin
+      const { isAdmin } = req.user;
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
       // Retrieve all users from the database
       const [rows] = await pool.query('SELECT * FROM users');
   

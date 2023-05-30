@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/login', loginRoutes);
 app.use('/register', registerRoutes);
-app.use('/admin', adminRoutes);
+app.use('/admin', isAuthenticated, adminRoutes);
 app.use('/items', isAuthenticated, itemRoutes);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
