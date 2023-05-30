@@ -72,7 +72,8 @@ const getItems = async (req, res) => {
 // Add an item
 const addItem = async (req, res) => {
   try {
-    const { nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
+    const { id } = req.user;
+    const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
 
     // Check time
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -80,7 +81,7 @@ const addItem = async (req, res) => {
     // Insert the item into the database
     const connection = await pool.getConnection();
     const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    await connection.query(query, [nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok, now, now]);
+    await connection.query(query, [nama, id, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok, now, now]);
     connection.release();
 
     res.status(201).json({ message: 'Item added successfully' });
@@ -90,6 +91,51 @@ const addItem = async (req, res) => {
   }
 };
 
+const updateItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
+
+    // Check time
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    // Check if the item exists
+    const [rows] = await pool.query('SELECT * FROM items WHERE id = ?', [id]);
+    const item = rows[0];
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    // Update the item
+    await pool.query('UPDATE items SET nama = ?, deskripsi = ?, harga = ?, kategori = ?, imageUrl = ?, persyaratan = ?, tersedia = ?, stok = ?, updated_at = ? WHERE id = ?', [nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, now, id]);
+
+    res.json({ message: 'Item updated successfully' });
+  } catch (error) {
+    console.error('Failed to update item', error);
+    res.status(500).json({ error: 'Failed to update item' });
+  }
+};
+
+const deleteItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the item exists
+    const [rows] = await pool.query('SELECT * FROM items WHERE id = ?', [id]);
+    const item = rows[0];
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    // Delete the item
+    await pool.query('DELETE FROM items WHERE id = ?', [id]);
+
+    res.json({ message: 'Item deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete item', error);
+    res.status(500).json({ error: 'Failed to delete item' });
+  }
+};
   
-  module.exports = { getItems, addItem, };
+  module.exports = { getItems, addItem, updateItem, deleteItem };
   

@@ -11,4 +11,8 @@ router.get('/', itemController.getItems);
 // POST request to add an item
 router.post('/', itemController.addItem);
 
+//edit and delete
+router.put('/:id', itemController.updateItem);
+router.delete('/:id', itemController.deleteItem);
+
 module.exports = router;
