@@ -4,6 +4,12 @@ const pool = require('../config/database');
 
 const addAdmin = async (req, res) => {
     try {
+      // Check if the authenticated user is an admin
+      const { isAdmin } = req.user;
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
       // Get the user data from the request body
       const { name, email, password, address, city, phone } = req.body;
   
@@ -22,16 +28,31 @@ const addAdmin = async (req, res) => {
   
   const listUsers = async (req, res) => {
     try {
+
+      // Check if the authenticated user is an admin
+      const { isAdmin } = req.user;
+      if (!isAdmin) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
       // Retrieve all users from the database
       const [rows] = await pool.query('SELECT * FROM users');
   
       // Exclude password field from the response
       const users = rows.map(user => ({ id: user.id, name: user.name, email: user.email, address: user.address, city: user.city, phone: user.phone, isAdmin: user.isAdmin, created_at: user.created_at }));
   
-      res.json(users);
+      res.json({
+        success : true,
+        message : 'Data item didapatkan',
+        users
+      });
     } catch (error) {
       console.error('Failed to retrieve users', error);
-      res.status(500).json({ error: 'Failed to retrieve users' });
+      // res.status(500).json({ error: 'Failed to retrieve users' });
+      res.status(500).json({
+        success : false,
+        message : error.message
+      })
     }
   };
   
