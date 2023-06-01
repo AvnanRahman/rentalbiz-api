@@ -6,7 +6,13 @@ const pool = require('../config/database');
 const register = async (req, res) => {
     try {
       const { name, email, password, address, city, phone,  isAdmin } = req.body;
-  
+
+      // Check if the email already exists in the database
+      const [existingEmail] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+      if (existingEmail.length > 0) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
