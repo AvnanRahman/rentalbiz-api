@@ -6,6 +6,7 @@ const loginRoutes = require('./src/routes/loginRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const itemRoutes = require('./src/routes/itemRoutes');
+const userRoutes =  require('./src/routes/userRoutes');
 
 require('dotenv').config();
 
@@ -22,5 +23,6 @@ app.use('/login', loginRoutes);
 app.use('/register', registerRoutes);
 app.use('/admin', isAuthenticated, adminRoutes);
 app.use('/items', isAuthenticated, itemRoutes);
+app.use('/user', isAuthenticated, userRoutes);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
