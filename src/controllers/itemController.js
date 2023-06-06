@@ -91,6 +91,26 @@ const addItem = async (req, res) => {
   }
 };
 
+const getItemById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Retrieve the item from the database
+    const [rows] = await pool.query('SELECT * FROM items WHERE id = ?', [id]);
+    const item = rows[0];
+
+    // Check if the item exists
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    res.json({ item });
+  } catch (error) {
+    console.error('Failed to get item', error);
+    res.status(500).json({ error: 'Failed to get item' });
+  }
+};
+
 const updateItem = async (req, res) => {
   try {
     const { id } = req.params;
@@ -153,5 +173,5 @@ const deleteItem = async (req, res) => {
   }
 };
   
-  module.exports = { getItems, addItem, updateItem, deleteItem };
+  module.exports = { getItems, addItem, getItemById, updateItem, deleteItem };
   
