@@ -1,4 +1,17 @@
 // itemController.js
+const fs = require('fs');
+const { Storage } = require('@google-cloud/storage');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+
+const storage = new Storage({
+  projectId: process.env.PROJECT_ID,
+  keyFilename: '././service-account.json', // Path to your service account key JSON file
+});
+
+const bucketName = process.env.BUCKET_NAME; // Replace with your Google Cloud Storage bucket name
+
+
 const pool = require('../config/database');
 
 const getItems = async (req, res) => {
@@ -73,18 +86,57 @@ const getItems = async (req, res) => {
 const addItem = async (req, res) => {
   try {
     const { id } = req.user;
-    const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
+    const { nama, deskripsi, harga, kategori, persyaratan, tersedia, stok } = req.body;
+    const imageFile = req.file;
+
+    // Check if an image file was provided
+    if (!imageFile) {
+      return res.status(400).json({ error: 'Image file is required' });
+    }
+
+    // Upload the image file to Google Cloud Storage
+    const bucket = storage.bucket(bucketName);
+    const filename = `${uuidv4()}${path.extname(imageFile.originalname)}`;
+    const file = bucket.file(filename);
+    const filePath = path.join(__dirname, '../uploads/', imageFile.filename);
+
+    // Upload the local file to the bucket
+    await bucket.upload(filePath, {
+      destination: filename,
+      metadata: {
+        contentType: imageFile.mimetype,
+      },
+    });
+
+
+    // Generate the image URL
+    const imageUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+
+    // Remove the temporary file from the local filesystem
+    fs.unlinkSync(filePath);
+
 
     // Check time
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     // Insert the item into the database
     const connection = await pool.getConnection();
-    const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    await connection.query(query, [nama, id, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok, now, now]);
-    connection.release();
+    await connection.beginTransaction();
 
-    res.status(201).json({ message: 'Item added successfully' });
+    try {
+      const query = 'INSERT INTO items (nama, id_penyedia, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      await connection.query(query, [nama, id, deskripsi, harga, kategori, imageUrl, persyaratan, true, stok, now, now]);
+
+      await connection.commit();
+
+      res.status(201).json({ message: 'Item added successfully' });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+
   } catch (error) {
     console.error('Failed to add item', error);
     res.status(500).json({ error: error.sqlMessage || 'Failed to add item' });
