@@ -11,9 +11,6 @@ const keyFileContent = templateFile
   .replace('${PRIVATE_KEY}', process.env.PRIVATE_KEY)
   .replace('${CLIENT_EMAIL}', process.env.CLIENT_EMAIL)
   .replace('${CLIENT_ID}', process.env.CLIENT_ID)
-  .replace('${AUTH_URI}', process.env.AUTH_URI)
-  .replace('${TOKEN_URI}', process.env.TOKEN_URI)
-  .replace('${AUTH_PROVIDER_X509_CERT_URL}', process.env.AUTH_PROVIDER)
   .replace('${CLIENT_X509_CERT_URL}', process.env.CLIENT_CERT_URL);
 
 // Write the updated content to a new service-account-key.json file
