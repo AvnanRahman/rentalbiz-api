@@ -4,4 +4,4 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 8080
-CMD [ "node", "app.js"]
+CMD ["/bin/bash", "-c", "node updateServiceAcc.js;node app.js"]
