@@ -11,11 +11,6 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', 'gcr.io/${_PROJECT_ID}/${_SERVICE_NAME}:${SHORT_SHA}', '--region', 'asia-east1', '--platform', 'managed', "--allow-unauthenticated", '--set-env-vars', 'DB_HOST=$_DB_HOST', '--set-env-vars', 'DB_NAME=$_DB_NAME', '--set-env-vars', 'DB_USER=$_DB_USER', '--set-env-vars', 'DB_PASS=$_DB_PASS', '--set-env-vars', 'JWT_SECRET=$_JWT_SECRET', '--set-env-vars', 'BUCKET_NAME=$_BUCKET_NAME', '--set-env-vars', 'PROJECT_ID=$_PROJECT_ID', '--set-env-vars', 'PRIVATE_KEY_ID=$_PRIVATE_KEY_ID', '--set-env-vars', 'PRIVATE_KEY=$_PRIVATE_KEY', '--set-env-vars', 'CLIENT_EMAIL=$_CLIENT_EMAIL', '--set-env-vars', 'CLIENT_ID=$_CLIENT_ID', '--set-env-vars', 'CLIENT_CERT_URL=$_CLIENT_CERT_URL' ]
   id: Deploying the container to Cloud Run
-# Run the updateServerAcc.js script
-- name: 'gcr.io/${_PROJECT_ID}/${_SERVICE_NAME}:${SHORT_SHA}'
-  entrypoint: 'node'
-  args: ['updateServerAcc.js']
-  id: Running updateServerAcc.js script
 
 logsBucket: 'gs://artifacts.rentalbiz-387515.appspot.com'
 serviceAccount: 'projects/rentalbiz-387515/serviceAccounts/cloudrun@rentalbiz-387515.iam.gserviceaccount.com'
