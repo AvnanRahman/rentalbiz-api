@@ -11,17 +11,19 @@ const createTransaction = async (req, res) => {
     // Status 3 = "batal"
     // Status 4 = "selesai"
 
+    // Check if the item exists
+    const [rows] = await pool.query('SELECT * FROM items WHERE id = ?', [id_barang]);
+    const item = rows[0];
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
     // Retrieve the item's harga from the items table
     const [[{harga, stok}]] = await pool.query('SELECT harga, stok FROM items WHERE id = ?', [id_barang]);
     console.log('Retrieved harga:', harga);
     console.log('Retrieved stok:', stok);
 
-    // Check if item is not found
-    if (typeof harga === 'undefined' || typeof stok === 'undefined') {
-      console.log('Item not found');
-      res.status(404).json({ message: 'Item not found' });
-      return;
-    }
+
 
     // Check if jumlah exceeds stok
     if (jumlah > stok) {
@@ -29,6 +31,8 @@ const createTransaction = async (req, res) => {
       res.status(400).json({ message: 'Insufficient stock' });
       return;
     }
+
+
 
     // Calculate the total_harga_sewa
     const total_harga_sewa = harga * jumlah;
@@ -142,15 +146,25 @@ const updateTransactionById = async (req, res) => {
 const deleteTransactionById = async (req, res) => {
   try {
     const { id } = req.params;
+    const { id: id_user } = req.user;
 
     // Delete the transaction from the database
-    const result = await pool.query('DELETE FROM transaction WHERE id = ?', [id]);
+    const [rows]= await pool.query('SELECT * FROM transaction WHERE id = ? AND id_penyewa = ?', [id, id_user]);
+    const transaction = rows[0];
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Transaction not found' });
+    if (!transaction) {
+      return res.status(404).json({ error: 'Transaction not found' });
     }
 
-    res.status(200).json({ message: 'Transaction deleted successfully' });
+    // Check if the transaction's status is 1 (pending)
+    if (transaction.status !== 1) {
+      return res.status(403).json({ error: 'Cannot delete transactions with status other than pending' });
+    }
+
+    // Delete the item
+    await pool.query('DELETE FROM transaction WHERE id = ?', [id]);
+
+    res.json({ message: 'Item deleted successfully' });
   } catch (error) {
     console.error('Failed to delete transaction', error);
     res.status(500).json({ message: 'Failed to delete transaction' });
