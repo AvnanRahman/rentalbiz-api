@@ -148,12 +148,12 @@ const updateTransactionById = async (req, res) => {
     // Retrieve the item's harga from the items table
     const [[{harga, stok}]] = await pool.query('SELECT harga, stok FROM items WHERE id = ?', [transaction.id_barang]);
 
-    // Check if jumlah exceeds stok
-    if (jumlah > stok) {
-      console.log('Insufficient stock');
-      res.status(400).json({ message: 'Insufficient stock' });
-      return;
-    }
+  // Check if the status is "sewa" (2) and if jumlah exceeds stok
+  if (status === 2 && jumlah > stok) {
+    console.log('Insufficient stock');
+    res.status(400).json({ message: 'Insufficient stock' });
+    return;
+  }
 
     // Calculate the total_harga_sewa
     const total_harga_sewa = harga * jumlah;
@@ -162,6 +162,15 @@ const updateTransactionById = async (req, res) => {
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     await pool.query('UPDATE transaction SET tanggal_pinjam = ?, tanggal_kembali = ?, jumlah = ?, total_harga_sewa = ?, status = ?, updated_at = ? WHERE id = ?', [tanggal_pinjam, tanggal_kembali, jumlah, total_harga_sewa, status, now, id]);
+
+    // Adjust the item's stock based on the updated status
+    if (status === 2) {
+      // If status is "sewa" (2), reduce the item's stock by the updated jumlah
+      await pool.query('UPDATE items SET stok = stok - ? WHERE id = ?', [jumlah, transaction.id_barang]);
+    } else if (status === 3 || status === 4) {
+      // If status is "batal" (3) or "selesai" (4), increase the item's stock by the updated jumlah
+      await pool.query('UPDATE items SET stok = stok + ? WHERE id = ?', [jumlah, transaction.id_barang]);
+    }
 
     res.json({ 
       success : true,
