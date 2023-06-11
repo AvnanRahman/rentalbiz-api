@@ -17,7 +17,7 @@ const pool = mysql.createPool({
 
 // Create a user table if it doesn't exist
 pool.query(`CREATE TABLE IF NOT EXISTS users (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -30,9 +30,9 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
 
 // Create a item table if it doesn't exist
 pool.query(`CREATE TABLE IF NOT EXISTS items (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   nama VARCHAR(255) NOT NULL,
-  id_penyedia INT NOT NULL,
+  id_penyedia INT UNSIGNED NOT NULL,
   deskripsi TEXT,
   harga INT NOT NULL,
   kategori VARCHAR(255) NOT NULL,
@@ -45,5 +45,21 @@ pool.query(`CREATE TABLE IF NOT EXISTS items (
   updated_at TIMESTAMP NULL,
   CONSTRAINT FK_Penyedia FOREIGN KEY (id_penyedia) REFERENCES users(id)
 )`).catch(error => console.error('Failed to create items table', error));
+
+// Create a transaction table if it doesn't exist, status= 1:sewa, 2:pending, 3:batal, 4:selesai,
+pool.query(`CREATE TABLE IF NOT EXISTS transaction (
+  id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  id_barang INT UNSIGNED NOT NULL,
+  id_penyewa INT UNSIGNED NOT NULL,
+  tanggal_pinjam TIMESTAMP NULL,
+  tanggal_kembali TIMESTAMP NULL,
+  jumlah INT NOT NULL,
+  total_harga_sewa INT NOT NULL,
+  status INT(1) NOT NULL,
+  created_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL,
+  CONSTRAINT FK_Transaction_Barang FOREIGN KEY (id_barang) REFERENCES items(id),
+  CONSTRAINT FK_Transaction_User FOREIGN KEY (id_penyewa) REFERENCES users(id)
+)`).catch(error => console.error('Failed to create transaction table', error));
 
 module.exports = pool;
