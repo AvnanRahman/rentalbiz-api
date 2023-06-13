@@ -167,8 +167,8 @@ const updateItem = async (req, res) => {
   try {
     const { id } = req.params;
     const { id: id_penyedia } = req.user;
-   
-    const { nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok } = req.body;
+    const imageFile = req.file;
+    const { nama, deskripsi, harga, kategori, persyaratan, tersedia, stok } = req.body;
 
     // Check time
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -185,12 +185,57 @@ const updateItem = async (req, res) => {
       return res.status(403).json({ error: 'Access denied, you do not have access to edit this item' });
     }
 
-    // Update the item
-    await pool.query('UPDATE items SET nama = ?, deskripsi = ?, harga = ?, kategori = ?, imageUrl = ?, persyaratan = ?, tersedia = ?, stok = ?, updated_at = ? WHERE id = ?', [nama, deskripsi, harga, kategori, imageUrl, persyaratan, tersedia, stok, now, id]);
+    // Construct the update query dynamically
+    let updateQuery = 'UPDATE items SET';
+    const updateParams = [];
+
+    if (nama) {
+      updateQuery += ' nama = ?,';
+      updateParams.push(nama);
+    }
+
+    if (deskripsi) {
+      updateQuery += ' deskripsi = ?,';
+      updateParams.push(deskripsi);
+    }
+
+    if (harga) {
+      updateQuery += ' harga = ?,';
+      updateParams.push(harga);
+    }
+
+    if (kategori) {
+      updateQuery += ' kategori = ?,';
+      updateParams.push(kategori);
+    }
+
+    if (persyaratan) {
+      updateQuery += ' persyaratan = ?,';
+      updateParams.push(persyaratan);
+    }
+
+    if (tersedia !== undefined) {
+      updateQuery += ' tersedia = ?,';
+      updateParams.push(tersedia);
+    }
+
+    if (stok !== undefined) {
+      updateQuery += ' stok = ?,';
+      updateParams.push(stok);
+    }
+
+    updateQuery += ' updated_at = ? WHERE id = ?';
+    updateParams.push(new Date().toISOString().slice(0, 19).replace('T', ' '), id);
+
+    // Execute the update query
+    await pool.query(updateQuery, updateParams);
+
 
     res.json({ 
       success : true,
-      message: 'Item updated successfully' 
+      message: 'Item updated successfully',
+      updateQuery,
+      updateParams
     });
   } catch (error) {
     console.error('Failed to update item', error);
@@ -198,7 +243,6 @@ const updateItem = async (req, res) => {
       success : false,
       message : error.message
     });
-    // res.status(500).json({ error: 'Failed to update item' });
   }
 };
 

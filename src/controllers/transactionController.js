@@ -62,7 +62,29 @@ const getAllTransactions = async (req, res) => {
     }
 
     // Retrieve all transactions from the database
-    const [transactions] = await pool.query('SELECT * FROM transaction');
+
+    const query = `
+      SELECT
+        transaction.id,
+        transaction.id_barang,
+        items.nama AS nama_barang,
+        items.id_penyedia,
+        penyedia.name AS nama_penyedia,
+        transaction.id_penyewa,
+        penyewa.name AS nama_penyewa,
+        transaction.tanggal_pinjam,
+        transaction.tanggal_kembali,
+        transaction.jumlah,
+        transaction.total_harga_sewa,
+        transaction.status
+      FROM
+        transaction
+      INNER JOIN items ON transaction.id_barang = items.id
+      INNER JOIN users AS penyedia ON items.id_penyedia = penyedia.id
+      INNER JOIN users AS penyewa ON transaction.id_penyewa = penyewa.id
+    `;
+
+    const [transactions] = await pool.query(query);
 
     // const transactions = rows.map(transaction => ({id: transaction.id}));
 
@@ -82,7 +104,31 @@ const getTransactions = async (req, res) => {
     const { id: id_user } = req.user;
 
     // Retrieve all transactions by the logged-in user from the database
-    const [transactions] = await pool.query('SELECT * FROM transaction WHERE id_penyewa = ?', [id_user]);
+    const query = `
+      SELECT
+        transaction.id,
+        transaction.id_barang,
+        items.nama AS nama_barang,
+        items.id_penyedia,
+        penyedia.name AS nama_penyedia,
+        transaction.id_penyewa,
+        penyewa.name AS nama_penyewa,
+        transaction.tanggal_pinjam,
+        transaction.tanggal_kembali,
+        transaction.jumlah,
+        transaction.total_harga_sewa,
+        transaction.status
+      FROM
+        transaction
+      INNER JOIN items ON transaction.id_barang = items.id
+      INNER JOIN users AS penyedia ON items.id_penyedia = penyedia.id
+      INNER JOIN users AS penyewa ON transaction.id_penyewa = penyewa.id
+      WHERE
+        transaction.id_penyewa = ?
+    `;
+
+    // const [transactions] = await pool.query('SELECT * FROM transaction WHERE id_penyewa = ?', [id_user]);
+    const [transactions] = await pool.query(query, [id_user]);
 
     res.json({
       success : true,
@@ -101,7 +147,32 @@ const getTransactionById = async (req, res) => {
     const { id: id_user } = req.user;
 
     // Retrieve the transaction from the database
-    const [rows] = await pool.query('SELECT * FROM transaction WHERE id = ?', [id]);
+
+    const query = `
+      SELECT
+        transaction.id,
+        transaction.id_barang,
+        items.nama AS nama_barang,
+        items.id_penyedia,
+        penyedia.name AS nama_penyedia,
+        transaction.id_penyewa,
+        penyewa.name AS nama_penyewa,
+        transaction.tanggal_pinjam,
+        transaction.tanggal_kembali,
+        transaction.jumlah,
+        transaction.total_harga_sewa,
+        transaction.status
+      FROM
+        transaction
+      INNER JOIN items ON transaction.id_barang = items.id
+      INNER JOIN users AS penyedia ON items.id_penyedia = penyedia.id
+      INNER JOIN users AS penyewa ON transaction.id_penyewa = penyewa.id
+      WHERE
+        transaction.id = ? AND transaction.id_penyewa = ?
+    `;
+
+    // const [rows] = await pool.query('SELECT * FROM transaction WHERE id = ?', [id]);
+    const [rows] = await pool.query(query, [id, id_user]);
     const transaction = rows[0];
 
     // Check if the transaction exists
@@ -146,7 +217,7 @@ const updateTransactionById = async (req, res) => {
     }
 
     // Retrieve the item's harga from the items table
-    const [[{harga, stok}]] = await pool.query('SELECT harga, stok FROM items WHERE id = ?', [transaction.id_barang]);
+    const [[{harga, stok, total_sewa}]] = await pool.query('SELECT harga, stok, totalSewa FROM items WHERE id = ?', [transaction.id_barang]);
 
   // Check if the status is "sewa" (2) and if jumlah exceeds stok
   if (status === 2 && jumlah > stok) {
@@ -167,10 +238,14 @@ const updateTransactionById = async (req, res) => {
     if (status === 2) {
       // If status is "sewa" (2), reduce the item's stock by the updated jumlah
       await pool.query('UPDATE items SET stok = stok - ? WHERE id = ?', [jumlah, transaction.id_barang]);
-    } else if (status === 3 || status === 4) {
-      // If status is "batal" (3) or "selesai" (4), increase the item's stock by the updated jumlah
+    } else if (status === 3) {
+      // If status is "batal" (3)  increase the item's stock by the updated jumlah
       await pool.query('UPDATE items SET stok = stok + ? WHERE id = ?', [jumlah, transaction.id_barang]);
+    } else if (status === 4) {
+      // If status is "selesai" (4), increase the item's stock by the updated jumlah
+      await pool.query('UPDATE items SET stok = stok + ?, totalSewa = totalSewa + ? WHERE id = ?', [jumlah, jumlah, transaction.id_barang]);
     }
+
 
     res.json({ 
       success : true,
