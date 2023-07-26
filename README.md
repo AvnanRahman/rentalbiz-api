@@ -10,3 +10,6 @@ npm install
 # Copy env ke .env, sesuaikan variabelnya
 # Jalankan node js
 npm start
+
+#Arsitektur Sistem
+![Arsitektur Backend](/Arsitektur.png "Arsitektur Backend")
